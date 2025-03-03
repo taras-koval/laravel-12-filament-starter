@@ -15,6 +15,14 @@
 }
 
 @layer base {
+    body {
+        @apply text-zinc-800 antialiased;
+    }
+
+    a {
+        @apply hover:underline;
+    }
+
     .container {
         margin-left: auto;
         margin-right: auto;
@@ -24,11 +32,105 @@
 }
 
 @layer components {
-    /*.logo-component {*/
-    /*    @apply text-2xl tracking-tighter bg-black text-white font-mono font-bold hover:no-underline px-2 py-1 rounded;*/
-    /*}*/
+    .underline-link-component {
+        @apply inline font-medium text-sm text-neutral-800 underline underline-offset-[6px]
+            hover:decoration-current decoration-[color-mix(in_oklab,var(--color-neutral-800),transparent_80%)]
+    }
 
-    /*.cart-component {*/
-    /*    @apply bg-white border rounded-md p-8;*/
-    /*}*/
+    .button-link-component {
+        @apply flex items-center h-10 lg:h-8 px-3 py-0 my-px gap-3 w-full
+        text-left text-zinc-500
+        rounded-lg
+        data-current:text-(--color-neutral-800)
+        data-current:bg-zinc-800/[4%]
+        hover:data-current:text-(--color-neutral-800)
+        hover:text-zinc-800
+        hover:bg-zinc-800/[4%]
+        hover:no-underline
+    }
+
+    .button-primary-component {
+        @apply relative inline-flex items-center justify-center px-4 gap-2 h-10
+            rounded-lg
+            font-medium text-sm whitespace-nowrap
+            cursor-pointer select-none
+            focus:outline-offset-2
+            focus:outline-2
+            active:shadow-none
+            disabled:opacity-75
+            disabled:cursor-default
+            disabled:pointer-events-none
+
+            border border-black/10 bg-neutral-800
+            text-white
+            shadow-[inset_0px_1px_--theme(--color-white/.2)]
+            transition-opacity
+            hover:bg-[color-mix(in_oklab,_var(--color-neutral-800),_transparent_10%)]
+            active:bg-neutral-800
+    }
+
+    .button-secondary-component {
+        @apply relative flex items-center justify-center px-4 gap-2 h-10
+            rounded-lg
+            font-medium text-sm whitespace-nowrap
+            cursor-pointer select-none
+            active:shadow-none
+            disabled:opacity-75
+            disabled:cursor-default
+            disabled:pointer-events-none
+
+            border border-zinc-200 border-b-zinc-300/80 bg-white
+            text-zinc-800
+            shadow-xs
+            transition-opacity
+            hover:bg-zinc-50
+            hover:border-zinc-200
+    }
+
+    .button-danger-component {
+        @apply relative inline-flex items-center justify-center px-4 gap-2 h-10
+        rounded-lg
+        font-medium text-sm whitespace-nowrap
+        cursor-pointer select-none
+        focus:outline-offset-2
+        focus:outline-2
+        active:shadow-none
+        disabled:opacity-75
+        disabled:cursor-default
+        disabled:pointer-events-none
+
+        border border-black/10 bg-red-700
+        text-white
+        shadow-[inset_0px_1px_--theme(--color-white/.2)]
+        transition-opacity
+        hover:bg-[color-mix(in_oklab,_var(--color-red-800),_transparent_10%)]
+        active:bg-red-800
+    }
+
+    .input-component {
+        @apply block appearance-none px-3 h-10
+            border border-zinc-200 border-b-zinc-300/80 rounded-lg
+            bg-white shadow-xs
+            text-zinc-700 leading-[1.375rem]
+            placeholder-zinc-400
+            placeholder:text-sm
+            focus:outline-offset-2
+            focus:outline-2
+            disabled:text-zinc-400
+            disabled:placeholder-zinc-400/70
+            disabled:shadow-none
+            disabled:border-b-zinc-200
+    }
+
+    .label-component {
+        @apply inline-block text-sm font-medium mb-2
+    }
+
+    .error-component {
+        @apply text-sm font-medium text-red-500 mt-2
+    }
+}
+
+@layer utilities {
+
 }
