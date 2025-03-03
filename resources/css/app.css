@@ -7,6 +7,28 @@
 @source "../**/*.vue";
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    --font-sans: 'Instrument Sans', system-ui, ui-sans-serif, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+
+    --breakpoint-sm: 30rem;
+    --breakpoint-2xl: initial;
+}
+
+@layer base {
+    .container {
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+
+@layer components {
+    /*.logo-component {*/
+    /*    @apply text-2xl tracking-tighter bg-black text-white font-mono font-bold hover:no-underline px-2 py-1 rounded;*/
+    /*}*/
+
+    /*.cart-component {*/
+    /*    @apply bg-white border rounded-md p-8;*/
+    /*}*/
 }
