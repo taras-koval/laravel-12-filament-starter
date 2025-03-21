@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\OAuth\ProviderController;
 use App\Http\Controllers\Auth\PasswordConfirmationController;
 use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +20,10 @@ Route::middleware('guest')->group(function () {
 
     Route::get('reset-password/{token}', [ForgotPasswordController::class, 'createReset'])->name('password.reset');
     Route::post('reset-password', [ForgotPasswordController::class, 'storeReset'])->name('password.store');
+
+    // OAuth
+    Route::get('/auth/{driver}/redirect', [ProviderController::class, 'redirect'])->name('auth.redirect');
+    Route::get('/auth/{driver}/callback', [ProviderController::class, 'callback'])->name('auth.callback');
 });
 
 Route::middleware('auth')->group(function () {

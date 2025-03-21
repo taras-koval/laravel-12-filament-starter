@@ -82,6 +82,40 @@ class AccountControllerTest extends TestCase
         $this->assertFalse(Hash::check('NewPassword123', $user->fresh()->password));
     }
 
+    public function test_oauth_user_can_set_password_without_current_password()
+    {
+        $user = User::factory()->create([
+            'password' => null,
+        ]);
+
+        $response = $this->actingAs($user)->put(route('profile.account.update-password'), [
+            'password' => 'NewPassword123',
+            'password_confirmation' => 'NewPassword123',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('status', 'password-updated');
+
+        $this->assertTrue(Hash::check('NewPassword123', $user->fresh()->password));
+    }
+
+    public function test_user_with_existing_password_cannot_update_without_current_password()
+    {
+        $user = User::factory()->create([
+            'password' => Hash::make('existing-password'),
+        ]);
+
+        $response = $this->actingAs($user)->put(route('profile.account.update-password'), [
+            'password' => 'NewPassword123',
+            'password_confirmation' => 'NewPassword123',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHasErrors('current_password');
+
+        $this->assertTrue(Hash::check('existing-password', $user->fresh()->password));
+    }
+
     public function test_user_must_confirm_password_before_deleting_account()
     {
         $user = User::factory()->create();

@@ -54,7 +54,11 @@
 
     <section class="max-w-md mb-10">
         <header class="mb-4">
-            <h2 class="font-bold mb-2">{{ __('Update password') }}</h2>
+            @if(auth()->user()->password)
+                <h2 class="font-bold mb-2">{{ __('Update password') }}</h2>
+            @else
+                <h2 class="font-bold mb-2">{{ __('Create password') }}</h2>
+            @endif
             <p class="text-sm text-zinc-500">
                 {{ __('Ensure your account is using a long, random password to stay secure') }}
             </p>
@@ -64,15 +68,17 @@
             @method('put')
             @csrf
 
-            <div class="mb-4">
-                <label for="current_password" class="label-component">{{ __('Current Password') }}</label>
-                <input type="password" name="current_password" id="current_password" required
-                       placeholder=""
-                       class="input-component w-full @error('current_password') border-red-500 @enderror">
-                @error('current_password')
-                    <p class="error-component">{{ $message }}</p>
-                @enderror
-            </div>
+            @if(auth()->user()->password)
+                <div class="mb-4">
+                    <label for="current_password" class="label-component">{{ __('Current Password') }}</label>
+                    <input type="password" name="current_password" id="current_password" required
+                           placeholder=""
+                           class="input-component w-full @error('current_password') border-red-500 @enderror">
+                    @error('current_password')
+                        <p class="error-component">{{ $message }}</p>
+                    @enderror
+                </div>
+            @endif
 
             <div class="mb-4">
                 <label for="password" class="label-component">{{ __('New Password') }}</label>

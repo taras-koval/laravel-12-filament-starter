@@ -14,24 +14,12 @@
 
             <div class="flex flex-col gap-4">
                 {{-- Google Button --}}
-                <button type="submit" class="button-secondary-component w-full">
-                    @include('_components.loader-indicator')
-
+                <a href="/auth/google/redirect" class="button-secondary-component w-full hover:no-underline">
                     <div class="inline-flex items-center gap-2.5">
                         <img src="{{ asset('images/icons/google.svg') }}" alt="google-logo" class="size-6">
                         <span>{{ __('Sign up with') }} Google</span>
                     </div>
-                </button>
-
-                {{-- GitHub Button --}}
-                {{--<button type="submit" class="button-secondary-component w-full">
-                    @include('_components.loader')
-
-                    <div class="inline-flex items-center gap-2.5">
-                        <img src="{{ asset('images/icons/github.svg') }}" alt="github-logo" class="size-6">
-                        <span>{{ __('Sign up with') }} GitHub</span>
-                    </div>
-                </button>--}}
+                </a>
             </div>
 
             <div class="flex items-center w-full">
