@@ -10,6 +10,6 @@ class DashboardController extends Controller
 {
     public function index(Request $request): View
     {
-        return view('profile.dashboard', ['user' => $request->user()]);
+        return view('profile.dashboard');
     }
 }

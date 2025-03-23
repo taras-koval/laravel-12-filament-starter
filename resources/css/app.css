@@ -19,10 +19,6 @@
         @apply text-zinc-800 antialiased;
     }
 
-    a {
-        @apply hover:underline;
-    }
-
     .container {
         margin-left: auto;
         margin-right: auto;

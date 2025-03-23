@@ -48,6 +48,10 @@ class ProviderController extends Controller
             ]
         );
 
+        if (!$user->avatar) {
+            $user->update(['avatar' => $socialiteUser->getAvatar()]);
+        }
+
         Auth::login($user);
 
         return redirect()->route('profile.dashboard');
