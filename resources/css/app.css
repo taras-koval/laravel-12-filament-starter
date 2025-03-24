@@ -19,6 +19,11 @@
         @apply text-zinc-800 antialiased;
     }
 
+    button:not(:disabled),
+    [role="button"]:not(:disabled) {
+        cursor: pointer;
+    }
+
     .container {
         margin-left: auto;
         margin-right: auto;
@@ -34,7 +39,7 @@
     }
 
     .button-link-component {
-        @apply flex items-center h-10 lg:h-8 px-3 py-0 my-px gap-3 w-full
+        @apply flex items-center h-10 lg:h-9 px-3 py-0 my-px gap-3 w-full
         text-left text-zinc-500
         rounded-lg
         data-current:text-(--color-neutral-800)
@@ -62,7 +67,7 @@
             shadow-[inset_0px_1px_--theme(--color-white/.2)]
             transition-opacity
             hover:bg-[color-mix(in_oklab,_var(--color-neutral-800),_transparent_10%)]
-            active:bg-neutral-800
+            active:bg-neutral-900
     }
 
     .button-secondary-component {
