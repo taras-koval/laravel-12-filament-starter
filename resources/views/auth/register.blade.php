@@ -28,19 +28,18 @@
                 <div class="grow border-0 bg-zinc-800/15 h-px"></div>
             </div>
 
-            <form action="{{ route('register') }}" method="post">
-                @csrf
-
+            <form action="{{ route('register') }}" method="post" x-data="registerForm()" @submit.prevent="submit()">
                 {{-- Name --}}
                 <div class="mb-4">
                     <label for="name" class="label-component">{{ __('Full name') }}</label>
                     <input type="text" name="name" id="name" required autofocus
                            placeholder="full name"
-                           value="{{ old('name') }}"
-                           class="input-component w-full @error('name') border-red-500 @enderror">
-                    @error('name')
-                        <p class="error-component">{{ $message }}</p>
-                    @enderror
+                           x-model="form.name"
+                           class="input-component w-full" :class="errors.name ? 'border-red-500' : ''">
+
+                    <template x-if="errors.name">
+                        <p class="error-component" x-text="errors.name[0]"></p>
+                    </template>
                 </div>
 
                 {{-- Email Address --}}
@@ -48,11 +47,12 @@
                     <label for="email" class="label-component">{{ __('Email address') }}</label>
                     <input type="email" name="email" id="email" required
                            placeholder="email@example.com"
-                           value="{{ old('email') }}"
-                           class="input-component w-full @error('email') border-red-500 @enderror">
-                    @error('email')
-                        <p class="error-component">{{ $message }}</p>
-                    @enderror
+                           x-model="form.email"
+                           class="input-component w-full" :class="errors.email ? 'border-red-500' : ''">
+
+                    <template x-if="errors.email">
+                        <p class="error-component" x-text="errors.email[0]"></p>
+                    </template>
                 </div>
 
                 {{-- Password --}}
@@ -60,10 +60,12 @@
                     <label for="password" class="label-component">{{ __('Password') }}</label>
                     <input type="password" name="password" id="password" required
                            placeholder="password"
-                           class="input-component w-full @error('password') border-red-500 @enderror">
-                    @error('password')
-                        <p class="error-component">{{ $message }}</p>
-                    @enderror
+                           x-model="form.password"
+                           class="input-component w-full" :class="errors.password ? 'border-red-500' : ''">
+
+                    <template x-if="errors.password">
+                        <p class="error-component" x-text="errors.password[0]"></p>
+                    </template>
                 </div>
 
                 {{-- Confirm Password --}}
@@ -71,16 +73,19 @@
                     <label for="password_confirmation" class="label-component">{{ __('Confirm Password') }}</label>
                     <input type="password" name="password_confirmation" id="password_confirmation" required
                            placeholder="confirm password"
-                           class="input-component w-full @error('password_confirmation') border-red-500 @enderror">
-                    @error('password_confirmation')
-                        <p class="error-component">{{ $message }}</p>
-                    @enderror
+                           x-model="form.password_confirmation"
+                           class="input-component w-full" :class="errors.password_confirmation ? 'border-red-500' : ''">
+
+                    <template x-if="errors.password_confirmation">
+                        <p class="error-component" x-text="errors.password_confirmation[0]"></p>
+                    </template>
                 </div>
 
-                {{-- Submit Button --}}
-                <button type="submit" class="button-primary-component w-full">
-                    @include('_components.loader-indicator')
-                    {{ __('Sign up') }}
+                <button type="submit" class="button-primary-component w-full" :disabled="loading">
+                    <span x-show="!showLoader">{{ __('Sign up') }}</span>
+                    <span x-show="showLoader" x-cloak>
+                        @include('_components.loader-indicator')
+                    </span>
                 </button>
             </form>
 
@@ -92,3 +97,45 @@
 
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        function registerForm() {
+            return {
+                form: {
+                    name: '',
+                    email: '',
+                    password: '',
+                    password_confirmation: ''
+                },
+                errors: {},
+                loading: false,
+                showLoader: false,
+
+                submit() {
+                    if (this.loading) return;
+                    this.loading = true;
+                    const loaderTimeout = setTimeout(() => this.showLoader = true, 150);
+
+                    axios.post('{{ route('register') }}', this.form)
+                        .then(response => {
+                            this.errors = {};
+                            window.location.href = response.data.redirect;
+                        })
+                        .catch(error => {
+                            if (error.response?.status === 422) {
+                                this.errors = error.response.data.errors;
+                            } else {
+                                toastError(error.response?.data?.message || error.response?.statusText);
+                            }
+                        })
+                        .finally(() => {
+                            clearTimeout(loaderTimeout);
+                            this.loading = false;
+                            this.showLoader = false;
+                        });
+                }
+            }
+        }
+    </script>
+@endpush

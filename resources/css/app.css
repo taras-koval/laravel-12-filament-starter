@@ -7,8 +7,7 @@
 @source "../**/*.vue";
 
 @theme {
-    --font-sans: 'Instrument Sans', system-ui, ui-sans-serif, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Instrument Sans', system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
     --breakpoint-sm: 30rem;
     --breakpoint-2xl: initial;
@@ -61,7 +60,6 @@
             disabled:opacity-75
             disabled:cursor-default
             disabled:pointer-events-none
-
             border border-black/10 bg-neutral-800
             text-white
             shadow-[inset_0px_1px_--theme(--color-white/.2)]
@@ -79,7 +77,6 @@
             disabled:opacity-75
             disabled:cursor-default
             disabled:pointer-events-none
-
             border border-zinc-200 border-b-zinc-300/80 bg-white
             text-zinc-800
             shadow-xs
@@ -99,7 +96,6 @@
         disabled:opacity-75
         disabled:cursor-default
         disabled:pointer-events-none
-
         border border-black/10 bg-red-700
         text-white
         shadow-[inset_0px_1px_--theme(--color-white/.2)]
@@ -128,10 +124,12 @@
     }
 
     .error-component {
-        @apply text-sm font-medium text-red-500 mt-2
+        @apply font-medium text-sm text-red-500 mt-2
     }
 }
 
 @layer utilities {
-
+    [x-cloak] {
+        display: none !important;
+    }
 }

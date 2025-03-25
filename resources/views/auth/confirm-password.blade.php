@@ -31,7 +31,6 @@
 
                 {{-- Submit Button --}}
                 <button type="submit" class="button-primary-component w-full">
-                    @include('_components.loader-indicator')
                     {{ __('Confirm') }}
                 </button>
             </form>

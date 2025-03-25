@@ -9,7 +9,12 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Facades\Socialite;
+use Tests\Feature\Auth\OAuth\ProviderControllerTest;
 
+/**
+ * Tests
+ * @see ProviderControllerTest
+ */
 class ProviderController extends Controller
 {
     public function redirect(string $driver) : RedirectResponse

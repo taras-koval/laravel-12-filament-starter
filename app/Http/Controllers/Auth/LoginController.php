@@ -4,14 +4,19 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Tests\Feature\Auth\LoginControllerTest;
 
 // TODO: Google reCAPTCHA
 // TODO: Two-factor authentication
-// TODO: Google oAuth
+/**
+ * Tests
+ * @see LoginControllerTest
+ */
 class LoginController extends Controller
 {
     public function create(): View
@@ -19,13 +24,14 @@ class LoginController extends Controller
         return view('auth.login');
     }
 
-    public function store(LoginRequest $request): RedirectResponse
+    public function storeAjax(LoginRequest $request): JsonResponse
     {
         $request->authenticate();
-
         $request->session()->regenerate();
 
-        return redirect()->intended(route('profile.dashboard'));
+        return response()->json([
+            'redirect' => session()?->pull('url.intended', route('profile.dashboard')),
+        ]);
     }
 
     public function destroy(Request $request): RedirectResponse

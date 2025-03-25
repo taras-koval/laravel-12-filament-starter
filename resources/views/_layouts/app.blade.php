@@ -49,7 +49,7 @@
                         {{ $user->name }}
 
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 18" fill="none" stroke-width="3.5" stroke="currentColor" aria-hidden="true" class="size-3.5 ml-1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/>
                         </svg>
                     </button>
 
@@ -89,5 +89,9 @@
         </p>
     </div>
 </footer>
+
+@include('_components.toast-message')
+
+@stack('scripts')
 </body>
 </html>

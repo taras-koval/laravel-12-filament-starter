@@ -1,6 +1,6 @@
 <?php
 
-namespace Auth;
+namespace Tests\Feature\Auth;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -17,29 +17,34 @@ class LoginControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_users_can_authenticate_using_the_login_screen(): void
+    public function test_users_can_authenticate(): void
     {
         $user = User::factory()->create();
 
-        $response = $this->post(route('login'), [
+        $response = $this->postJson(route('login'), [
             'email' => $user->email,
             'password' => 'password',
         ]);
 
-        $this->assertAuthenticated();
-        $response->assertRedirect(route('profile.dashboard'));
+        $this->assertAuthenticatedAs($user);
+        $response->assertOk();
+        $response->assertJson([
+            'redirect' => route('profile.dashboard'),
+        ]);
     }
 
     public function test_users_can_not_authenticate_with_invalid_password(): void
     {
         $user = User::factory()->create();
 
-        $this->post(route('login'), [
+        $response = $this->postJson(route('login'), [
             'email' => $user->email,
             'password' => 'wrong-password',
         ]);
 
         $this->assertGuest();
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['email']);
     }
 
     public function test_users_can_logout(): void

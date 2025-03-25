@@ -1,6 +1,6 @@
 <?php
 
-namespace Auth;
+namespace Tests\Feature\Auth;
 
 use App\Models\User;
 use Illuminate\Auth\Events\Verified;
@@ -61,9 +61,10 @@ class EmailVerificationControllerTest extends TestCase
     {
         $user = User::factory()->unverified()->create();
 
-        $response = $this->actingAs($user)->post(route('verification.send'));
+        $response = $this->actingAs($user)
+            ->postJson(route('verification.send'));
 
-        $response->assertStatus(302);
-        $response->assertSessionHas('status', 'verification-link-sent');
+        $response->assertOk();
+        $response->assertJson(['status' => 'verification-link-sent']);
     }
 }

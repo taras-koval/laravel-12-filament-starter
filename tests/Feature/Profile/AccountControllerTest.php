@@ -1,6 +1,6 @@
 <?php
 
-namespace Profile;
+namespace Tests\Feature\Profile;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -29,13 +29,15 @@ class AccountControllerTest extends TestCase
             'email' => 'old@example.com',
         ]);
 
-        $response = $this->actingAs($user)->patch(route('profile.account.update'), [
+        $response = $this->actingAs($user)->patchJson(route('profile.account.update'), [
             'name' => 'New Name',
             'email' => 'new@example.com',
         ]);
 
-        $response->assertRedirect();
-        $response->assertSessionHas('status', 'profile-updated');
+        $response->assertOk();
+        $response->assertJson([
+            'status' => 'profile-updated',
+        ]);
 
         $this->assertDatabaseHas('users', [
             'id' => $user->id,
@@ -52,14 +54,16 @@ class AccountControllerTest extends TestCase
             'password' => Hash::make('old-password'),
         ]);
 
-        $response = $this->actingAs($user)->put(route('profile.account.update-password'), [
+        $response = $this->actingAs($user)->putJson(route('profile.account.update-password'), [
             'current_password' => 'old-password',
             'password' => 'NewPassword123',
             'password_confirmation' => 'NewPassword123',
         ]);
 
-        $response->assertRedirect();
-        $response->assertSessionHas('status', 'password-updated');
+        $response->assertOk();
+        $response->assertJson([
+            'status' => 'password-updated',
+        ]);
 
         $this->assertTrue(Hash::check('NewPassword123', $user->fresh()->password));
     }
@@ -70,48 +74,50 @@ class AccountControllerTest extends TestCase
             'password' => Hash::make('old-password'),
         ]);
 
-        $response = $this->actingAs($user)->put(route('profile.account.update-password'), [
+        $response = $this->actingAs($user)->putJson(route('profile.account.update-password'), [
             'current_password' => 'wrong-password',
             'password' => 'NewPassword123',
             'password_confirmation' => 'NewPassword123',
         ]);
 
-        $response->assertRedirect();
-        $response->assertSessionHasErrors(['current_password']);
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['current_password']);
 
         $this->assertFalse(Hash::check('NewPassword123', $user->fresh()->password));
     }
 
-    public function test_oauth_user_can_set_password_without_current_password()
+    public function test_oauth_user_can_set_password_without_current_password_ajax()
     {
         $user = User::factory()->create([
             'password' => null,
         ]);
 
-        $response = $this->actingAs($user)->put(route('profile.account.update-password'), [
+        $response = $this->actingAs($user)->putJson(route('profile.account.update-password'), [
             'password' => 'NewPassword123',
             'password_confirmation' => 'NewPassword123',
         ]);
 
-        $response->assertRedirect();
-        $response->assertSessionHas('status', 'password-updated');
+        $response->assertOk();
+        $response->assertJson([
+            'status' => 'password-updated',
+        ]);
 
         $this->assertTrue(Hash::check('NewPassword123', $user->fresh()->password));
     }
 
-    public function test_user_with_existing_password_cannot_update_without_current_password()
+    public function test_user_with_existing_password_cannot_update_without_current_password_ajax()
     {
         $user = User::factory()->create([
             'password' => Hash::make('existing-password'),
         ]);
 
-        $response = $this->actingAs($user)->put(route('profile.account.update-password'), [
+        $response = $this->actingAs($user)->putJson(route('profile.account.update-password'), [
             'password' => 'NewPassword123',
             'password_confirmation' => 'NewPassword123',
         ]);
 
-        $response->assertRedirect();
-        $response->assertSessionHasErrors('current_password');
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors('current_password');
 
         $this->assertTrue(Hash::check('existing-password', $user->fresh()->password));
     }

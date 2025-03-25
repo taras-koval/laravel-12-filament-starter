@@ -4,10 +4,17 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\Response;
+use Tests\Feature\Auth\EmailVerificationControllerTest;
 
+/**
+ * Tests
+ * @see EmailVerificationControllerTest
+ */
 class EmailVerificationController extends Controller
 {
     /**
@@ -39,14 +46,17 @@ class EmailVerificationController extends Controller
     /**
      * Send a new email verification notification.
      */
-    public function resend(Request $request): RedirectResponse
+    public function resendAjax(Request $request): JsonResponse
     {
         if ($request->user()->hasVerifiedEmail()) {
-            return redirect()->intended(route('profile.dashboard'));
+            return response()->json(['message' => 'Already verified.'], Response::HTTP_BAD_REQUEST);
         }
 
         $request->user()->sendEmailVerificationNotification();
 
-        return back()->with('status', 'verification-link-sent');
+        return response()->json([
+            'status' => 'verification-link-sent',
+            'message' => __("A new verification link has been sent."),
+        ]);
     }
 }

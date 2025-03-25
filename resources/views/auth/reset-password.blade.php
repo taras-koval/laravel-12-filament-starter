@@ -12,28 +12,19 @@
                 <h1 class="text-2xl font-medium">{{ __('Reset Password') }}</h1>
             </header>
 
-            <form action="{{ route('password.store') }}" method="post">
-                @csrf
-
-                {{-- Password Reset Token --}}
-                <input type="hidden" name="token" value="{{ $request->route('token') }}">
-
-                {{-- Email Address --}}
-                <input type="hidden" name="email" value="{{ $request->email }}">
-                @error('email')
-                    <p class="error-component mb-4">{{ $message }}</p>
-                @enderror
-
+            <form action="{{ route('password.store') }}" method="post" x-data="resetForm()" @submit.prevent="submit()">
                 {{-- Password --}}
                 <div class="mb-4">
                     <label for="password" class="label-component">{{ __('New Password') }}</label>
                     <input type="password" name="password" id="password" required autofocus
                            placeholder="password"
                            autocomplete="new-password"
-                           class="input-component w-full @error('password') border-red-500 @enderror">
-                    @error('password')
-                        <p class="error-component">{{ $message }}</p>
-                    @enderror
+                           x-model="form.password"
+                           class="input-component w-full" :class="errors.password ? 'border-red-500' : ''">
+
+                    <template x-if="errors.password">
+                        <p class="error-component" x-text="errors.password[0]"></p>
+                    </template>
                 </div>
 
                 {{-- Confirm Password --}}
@@ -42,16 +33,20 @@
                     <input type="password" name="password_confirmation" id="password_confirmation" required
                            placeholder="confirm password"
                            autocomplete="new-password"
-                           class="input-component w-full @error('password_confirmation') border-red-500 @enderror">
-                    @error('password_confirmation')
-                        <p class="error-component">{{ $message }}</p>
-                    @enderror
+                           x-model="form.password_confirmation"
+                           class="input-component w-full" :class="errors.password_confirmation ? 'border-red-500' : ''">
+
+                    <template x-if="errors.password_confirmation">
+                        <p class="error-component" x-text="errors.password_confirmation[0]"></p>
+                    </template>
                 </div>
 
                 {{-- Submit Button --}}
-                <button type="submit" class="button-primary-component w-full">
-                    @include('_components.loader-indicator')
-                    {{ __('Reset password') }}
+                <button type="submit" class="button-primary-component w-full" :disabled="loading">
+                    <span x-show="!showLoader">{{ __('Reset Password') }}</span>
+                    <span x-show="showLoader" x-cloak>
+                        @include('_components.loader-indicator')
+                    </span>
                 </button>
             </form>
 
@@ -63,3 +58,45 @@
 
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        function resetForm() {
+            return {
+                form: {
+                    email: '{{ $request->email }}',
+                    token: '{{ $request->route('token') }}',
+                    password: '',
+                    password_confirmation: ''
+                },
+                errors: {},
+                loading: false,
+                showLoader: false,
+
+                submit() {
+                    if (this.loading) return;
+                    this.loading = true;
+                    const loaderTimeout = setTimeout(() => this.showLoader = true, 150);
+
+                    axios.post('{{ route('password.store') }}', this.form)
+                        .then(response => {
+                            this.errors = {};
+                            window.location.href = response.data.redirect;
+                        })
+                        .catch(error => {
+                            if (error.response?.status === 422) {
+                                this.errors = error.response.data.errors;
+                            } else {
+                                toastError(error.response?.data?.message || error.response?.statusText);
+                            }
+                        })
+                        .finally(() => {
+                            clearTimeout(loaderTimeout);
+                            this.loading = false;
+                            this.showLoader = false;
+                        });
+                }
+            }
+        }
+    </script>
+@endpush

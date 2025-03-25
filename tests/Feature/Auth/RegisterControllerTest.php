@@ -1,8 +1,7 @@
 <?php
 
-namespace Auth;
+namespace Tests\Feature\Auth;
 
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -19,18 +18,21 @@ class RegisterControllerTest extends TestCase
 
     public function test_new_users_can_register(): void
     {
-        $response = $this->post(route('register'), [
+        $response = $this->postJson(route('register'), [
             'name' => 'Test User',
             'email' => 'test@example.com',
             'password' => 'password1',
             'password_confirmation' => 'password1',
         ]);
 
-        $response->assertRedirect(route('profile.dashboard'));
+        $response->assertOk();
         $this->assertAuthenticated();
 
         $this->assertDatabaseHas('users', [
             'email' => 'test@example.com',
         ]);
+
+        $response->assertJsonStructure(['redirect']);
+        $response->assertJson(['redirect' => route('verification.notice')]);
     }
 }

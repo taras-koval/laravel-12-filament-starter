@@ -28,40 +28,44 @@
                 <div class="grow border-0 bg-zinc-800/15 h-px"></div>
             </div>
 
-            <form action="{{ route('login') }}" method="post">
-                @csrf
-
+            <form action="{{ route('login') }}" method="post" x-data="loginForm()" @submit.prevent="submit()">
                 {{-- Email address --}}
                 <div class="mb-6">
                     <label for="email" class="label-component">{{ __('Email address') }}</label>
                     <input type="email" name="email" id="email" required autofocus
                            placeholder="email@example.com"
-                           value="{{ old('email') }}"
-                           class="input-component w-full @error('email') border-red-500 @enderror">
-                    @error('email')
-                        <p class="error-component">{{ $message }}</p>
-                    @enderror
+                           x-model="form.email"
+                           class="input-component w-full" :class="errors.email ? 'border-red-500' : ''">
+
+                    <template x-if="errors.email">
+                        <p class="error-component" x-text="errors.email[0]"></p>
+                    </template>
                 </div>
 
                 {{-- Password --}}
                 <div class="mb-8">
                     <div class="flex justify-between">
                         <label for="password" class="label-component">{{ __('Password') }}</label>
-                        <a href="{{ route('forgot-password') }}" class="underline-link-component">{{ __('Forgot your password?') }}</a>
+                        <a href="{{ route('forgot-password') }}" class="underline-link-component">
+                            {{ __('Forgot your password?') }}
+                        </a>
                     </div>
-
                     <input type="password" name="password" id="password" required
                            placeholder="password"
-                           class="input-component w-full @error('password') border-red-500 @enderror">
-                    @error('password')
-                        <p class="error-component">{{ $message }}</p>
-                    @enderror
+                           x-model="form.password"
+                           class="input-component w-full" :class="errors.password ? 'border-red-500' : ''">
+
+                    <template x-if="errors.password">
+                        <p class="error-component" x-text="errors.password[0]"></p>
+                    </template>
                 </div>
 
                 {{-- Submit Button --}}
-                <button type="submit" class="button-primary-component w-full">
-                    @include('_components.loader-indicator')
-                    {{ __('Log in') }}
+                <button type="submit" class="button-primary-component w-full" :disabled="loading">
+                    <span x-show="!showLoader">{{ __('Log in') }}</span>
+                    <span x-show="showLoader" x-cloak>
+                        @include('_components.loader-indicator')
+                    </span>
                 </button>
             </form>
 
@@ -73,3 +77,43 @@
 
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        function loginForm() {
+            return {
+                form: {
+                    email: '',
+                    password: ''
+                },
+                errors: {},
+                loading: false,
+                showLoader: false,
+
+                submit() {
+                    if (this.loading) return;
+                    this.loading = true;
+                    const loaderTimeout = setTimeout(() => this.showLoader = true, 150);
+
+                    axios.post('{{ route('login') }}', this.form)
+                        .then(response => {
+                            this.errors = {};
+                            window.location.href = response.data.redirect;
+                        })
+                        .catch(error => {
+                            if (error.response?.status === 422) {
+                                this.errors = error.response.data.errors;
+                            } else {
+                                toastError(error.response?.data?.message || error.response?.statusText);
+                            }
+                        })
+                        .finally(() => {
+                            clearTimeout(loaderTimeout);
+                            this.loading = false;
+                            this.showLoader = false;
+                        });
+                }
+            }
+        }
+    </script>
+@endpush

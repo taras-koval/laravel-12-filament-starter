@@ -6,13 +6,18 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
-use Illuminate\Http\RedirectResponse;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
+use Tests\Feature\Auth\RegisterControllerTest;
 
 // TODO: Google reCAPTCHA
-// TODO: Google oAuth
+/**
+ * Tests
+ * @see RegisterControllerTest
+ */
 class RegisterController extends Controller
 {
     public function create(): View
@@ -20,7 +25,7 @@ class RegisterController extends Controller
         return view('auth.register');
     }
 
-    public function store(RegisterRequest $request): RedirectResponse
+    public function storeAjax(RegisterRequest $request) : JsonResponse
     {
         $user = User::query()->create([
             'name' => $request->validated('name'),
@@ -32,6 +37,10 @@ class RegisterController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('profile.dashboard');
+        $redirect = $user instanceof MustVerifyEmail && ! $user->hasVerifiedEmail()
+            ? route('verification.notice')
+            : route('profile.dashboard');
+
+        return response()->json(['redirect' => $redirect]);
     }
 }

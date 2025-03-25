@@ -1,6 +1,6 @@
 <?php
 
-namespace Auth;
+namespace Tests\Feature\Auth;
 
 use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
@@ -24,18 +24,20 @@ class ForgotPasswordControllerTest extends TestCase
         $response->assertViewIs('auth.forgot-password');
     }
 
-    public function test_user_can_request_password_reset_link()
+    public function test_user_can_request_password_reset_link(): void
     {
         Notification::fake();
 
-        $user = User::factory()->create(['email' => 'test@example.com']);
+        $user = User::factory()->create();
 
-        $response = $this->post(route('forgot-password'), [
-            'email' => 'test@example.com',
+        $response = $this->postJson(route('forgot-password'), [
+            'email' => $user->email,
         ]);
 
-        $response->assertRedirect();
-        $response->assertSessionHas('status', trans(Password::RESET_LINK_SENT));
+        $response->assertOk();
+        $response->assertJson([
+            'message' => trans(Password::RESET_LINK_SENT),
+        ]);
 
         Notification::assertSentTo($user, ResetPassword::class);
     }
@@ -44,22 +46,24 @@ class ForgotPasswordControllerTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->post(route('forgot-password'), [
+        $response = $this->postJson(route('forgot-password'), [
             'email' => $user->email,
         ]);
 
-        $response->assertStatus(302);
-        $response->assertSessionHas('status', trans('passwords.sent'));
+        $response->assertOk();
+        $response->assertJson([
+            'message' => trans('passwords.sent'),
+        ]);
     }
 
     public function test_error_is_returned_for_invalid_email(): void
     {
-        $response = $this->post(route('forgot-password'), [
+        $response = $this->postJson(route('forgot-password'), [
             'email' => 'nonexistent@example.com',
         ]);
 
-        $response->assertStatus(302);
-        $response->assertSessionHasErrors(['email']);
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['email']);
     }
 
     public function test_reset_password_page_can_be_rendered()
@@ -70,22 +74,22 @@ class ForgotPasswordControllerTest extends TestCase
         $response->assertViewIs('auth.reset-password');
     }
 
-    public function test_user_can_reset_password_with_valid_token()
+    public function test_user_can_reset_password_with_valid_token(): void
     {
         Event::fake();
 
         $user = User::factory()->create(['email' => 'test@example.com']);
-
         $token = Password::createToken($user);
 
-        $response = $this->post(route('password.store'), [
-            'email' => 'test@example.com',
+        $response = $this->postJson(route('password.store'), [
+            'email' => $user->email,
             'password' => 'NewPassword123',
             'password_confirmation' => 'NewPassword123',
             'token' => $token,
         ]);
 
-        $response->assertRedirect(route('profile.dashboard'));
+        $response->assertOk();
+        $response->assertJson(['redirect' => route('profile.dashboard')]);
 
         $this->assertAuthenticatedAs($user);
         $this->assertTrue(Hash::check('NewPassword123', $user->fresh()->password));
@@ -93,37 +97,36 @@ class ForgotPasswordControllerTest extends TestCase
         Event::assertDispatched(PasswordReset::class);
     }
 
-    public function test_reset_password_fails_with_invalid_token()
+    public function test_reset_password_fails_with_invalid_token(): void
     {
         $user = User::factory()->create(['email' => 'test@example.com']);
 
-        $response = $this->post(route('password.store'), [
-            'email' => 'test@example.com',
+        $response = $this->postJson(route('password.store'), [
+            'email' => $user->email,
             'password' => 'NewPassword123',
             'password_confirmation' => 'NewPassword123',
-            'token' => 'invalid_token',
+            'token' => 'invalid-token',
         ]);
 
-        $response->assertRedirect();
-        $response->assertSessionHasErrors(['email']);
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['password']);
 
         $this->assertFalse(Hash::check('NewPassword123', $user->fresh()->password));
     }
-
-    public function test_reset_password_fails_if_password_confirmation_does_not_match()
+    public function test_reset_password_fails_if_password_confirmation_does_not_match(): void
     {
         $user = User::factory()->create(['email' => 'test@example.com']);
         $token = Password::createToken($user);
 
-        $response = $this->post(route('password.store'), [
-            'email' => 'test@example.com',
+        $response = $this->postJson(route('password.store'), [
+            'email' => $user->email,
             'password' => 'NewPassword123',
-            'password_confirmation' => 'WrongPassword123',
+            'password_confirmation' => 'WrongPassword',
             'token' => $token,
         ]);
 
-        $response->assertRedirect();
-        $response->assertSessionHasErrors(['password']);
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['password']);
 
         $this->assertFalse(Hash::check('NewPassword123', $user->fresh()->password));
     }

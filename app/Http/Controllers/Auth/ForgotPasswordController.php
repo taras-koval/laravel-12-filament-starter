@@ -7,15 +7,20 @@ use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
-use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\Response;
+use Tests\Feature\Auth\ForgotPasswordControllerTest;
 
+/**
+ * Tests
+ * @see ForgotPasswordControllerTest
+ */
 class ForgotPasswordController extends Controller
 {
     /**
@@ -29,15 +34,19 @@ class ForgotPasswordController extends Controller
     /**
      * Send a reset link to the given email address.
      */
-    public function store(ForgotPasswordRequest $request): RedirectResponse
+    public function storeAjax(ForgotPasswordRequest $request): JsonResponse
     {
         $status = Password::sendResetLink($request->only('email'));
 
         if ($status !== Password::RESET_LINK_SENT) {
-            return back()->withInput($request->only('email'))->withErrors(['email' => trans($status)]);
+            return response()->json([
+                'errors' => [
+                    'email' => [trans($status)],
+                ],
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        return back()->with('status', trans($status));
+        return response()->json(['message' => trans($status)]);
     }
 
     /**
@@ -51,7 +60,7 @@ class ForgotPasswordController extends Controller
     /**
      * Handle an incoming new password request.
      */
-    public function storeReset(ResetPasswordRequest $request) : RedirectResponse
+    public function storeResetAjax(ResetPasswordRequest $request): JsonResponse
     {
         $status = Password::reset(
             credentials: $request->only('email', 'password', 'password_confirmation', 'token'),
@@ -66,15 +75,15 @@ class ForgotPasswordController extends Controller
         );
 
         if ($status !== Password::PASSWORD_RESET) {
-            return back()->withInput($request->only('email'))->withErrors(['email' => trans($status)]);
+            return response()->json([
+                'errors' => ['password' => [trans($status)]],
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        if (! Auth::attempt(credentials: $request->only('email', 'password'), remember: true)) {
-            throw ValidationException::withMessages(['email' => trans('auth.failed')]);
-        }
+        Auth::loginUsingId(User::where('email', $request->input('email'))->value('id'));
 
         $request->session()->regenerate();
 
-        return redirect()->route('profile.dashboard');
+        return response()->json(['redirect' => route('profile.dashboard')]);
     }
 }
