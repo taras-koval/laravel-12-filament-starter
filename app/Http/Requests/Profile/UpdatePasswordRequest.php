@@ -2,10 +2,7 @@
 
 namespace App\Http\Requests\Profile;
 
-use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rules\Password as PasswordRules;
 
 class UpdatePasswordRequest extends FormRequest

@@ -5,10 +5,10 @@ namespace Tests\Feature\Auth\OAuth;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
-use Mockery;
-use Tests\TestCase;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
 use Laravel\Socialite\Facades\Socialite;
+use Mockery;
+use Tests\TestCase;
 
 class ProviderControllerTest extends TestCase
 {

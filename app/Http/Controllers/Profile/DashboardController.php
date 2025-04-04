@@ -8,8 +8,7 @@ use Illuminate\View\View;
 use Tests\Feature\Profile\DashboardControllerTest;
 
 /**
- * Tests
- * @see DashboardControllerTest
+ * Tests @see DashboardControllerTest
  */
 class DashboardController extends Controller
 {

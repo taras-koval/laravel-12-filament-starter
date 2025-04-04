@@ -3,13 +3,13 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\User;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Password;
-use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Password;
 use Tests\TestCase;
 
 class ForgotPasswordControllerTest extends TestCase
@@ -113,6 +113,7 @@ class ForgotPasswordControllerTest extends TestCase
 
         $this->assertFalse(Hash::check('NewPassword123', $user->fresh()->password));
     }
+
     public function test_reset_password_fails_if_password_confirmation_does_not_match(): void
     {
         $user = User::factory()->create(['email' => 'test@example.com']);

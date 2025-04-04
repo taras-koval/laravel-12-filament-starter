@@ -9,36 +9,32 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Facades\Socialite;
-use Tests\Feature\Auth\OAuth\ProviderControllerTest;
 
 /**
- * Tests
- * @see ProviderControllerTest
+ * Tests @see ProviderControllerTest
  */
 class ProviderController extends Controller
 {
-    public function redirect(string $driver) : RedirectResponse
+    public function redirect(string $driver): RedirectResponse
     {
         return Socialite::driver($driver)->redirect();
     }
 
-    public function callback(string $driver) : RedirectResponse
+    public function callback(string $driver): RedirectResponse
     {
         try {
             $socialiteUser = Socialite::driver($driver)->user();
         } catch (Exception $exception) {
-            Log::error("OAuth Error ($driver): " . $exception->getMessage());
+            Log::error("OAuth Error ($driver): {$exception->getMessage()}");
 
-            // TODO: translation
             return redirect()->route('login')->withErrors([
-                'email' => 'Authentication via ' . ucfirst($driver) . ' failed. Please try again.',
+                'email' => __('Authentication via :driver failed. Please try again.', ['driver' => ucfirst($driver)]),
             ]);
         }
 
         if (!$socialiteUser->getEmail()) {
-            // TODO: translation
             return redirect()->route('login')->withErrors([
-                'email' => 'Email not received from ' . ucfirst($driver) . '.',
+                'email' => __('Email not received from :driver.', ['driver' => ucfirst($driver)]),
             ]);
         }
 

@@ -15,8 +15,7 @@ use Illuminate\View\View;
 use Tests\Feature\Profile\AccountControllerTest;
 
 /**
- * Tests
- * @see AccountControllerTest
+ * Tests @see AccountControllerTest
  */
 class AccountController extends Controller
 {

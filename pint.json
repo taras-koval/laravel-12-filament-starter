@@ -1,0 +1,8 @@
+{
+    "preset": "laravel",
+    "rules": {
+        "method_chaining_indentation": false,
+        "not_operator_with_successor_space": false,
+        "class_attributes_separation": false
+    }
+}

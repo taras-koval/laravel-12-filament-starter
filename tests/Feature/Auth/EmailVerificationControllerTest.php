@@ -7,7 +7,6 @@ use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\URL;
-use Notification;
 use Tests\TestCase;
 
 class EmailVerificationControllerTest extends TestCase

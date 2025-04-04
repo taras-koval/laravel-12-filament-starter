@@ -33,20 +33,19 @@
 
 @layer components {
     .underline-link-component {
-        @apply inline font-medium text-sm text-neutral-800 underline underline-offset-[6px]
-            hover:decoration-current decoration-[color-mix(in_oklab,var(--color-neutral-800),transparent_80%)]
+        @apply inline font-medium text-sm text-neutral-800 underline underline-offset-[6px] hover:decoration-neutral-800/80
     }
 
     .button-link-component {
         @apply flex items-center h-10 lg:h-9 px-3 py-0 my-px gap-3 w-full
-        text-left text-zinc-500
-        rounded-lg
-        data-current:text-(--color-neutral-800)
-        data-current:bg-zinc-800/[4%]
-        hover:data-current:text-(--color-neutral-800)
-        hover:text-zinc-800
-        hover:bg-zinc-800/[4%]
-        hover:no-underline
+            text-left text-zinc-500
+            rounded-lg
+            data-current:text-(--color-neutral-800)
+            data-current:bg-zinc-800/[4%]
+            hover:data-current:text-(--color-neutral-800)
+            hover:text-zinc-800
+            hover:bg-zinc-800/[4%]
+            hover:no-underline
     }
 
     .button-primary-component {
@@ -87,21 +86,21 @@
 
     .button-danger-component {
         @apply relative inline-flex items-center justify-center px-4 gap-2 h-10
-        rounded-lg
-        font-medium text-sm whitespace-nowrap
-        cursor-pointer select-none
-        focus:outline-offset-2
-        focus:outline-2
-        active:shadow-none
-        disabled:opacity-75
-        disabled:cursor-default
-        disabled:pointer-events-none
-        border border-black/10 bg-red-700
-        text-white
-        shadow-[inset_0px_1px_--theme(--color-white/.2)]
-        transition-opacity
-        hover:bg-[color-mix(in_oklab,_var(--color-red-800),_transparent_10%)]
-        active:bg-red-800
+            rounded-lg
+            font-medium text-sm whitespace-nowrap
+            cursor-pointer select-none
+            focus:outline-offset-2
+            focus:outline-2
+            active:shadow-none
+            disabled:opacity-75
+            disabled:cursor-default
+            disabled:pointer-events-none
+            border border-black/10 bg-red-700
+            text-white
+            shadow-[inset_0px_1px_--theme(--color-white/.2)]
+            transition-opacity
+            hover:bg-[color-mix(in_oklab,_var(--color-red-800),_transparent_10%)]
+            active:bg-red-800
     }
 
     .input-component {

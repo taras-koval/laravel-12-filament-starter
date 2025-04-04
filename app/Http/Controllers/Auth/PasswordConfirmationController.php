@@ -8,11 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
-use Tests\Feature\Auth\PasswordConfirmationControllerTest;
 
 /**
- * Tests
- * @see PasswordConfirmationControllerTest
+ * Tests @see PasswordConfirmationControllerTest
  */
 class PasswordConfirmationController extends Controller
 {
@@ -29,7 +27,7 @@ class PasswordConfirmationController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        if (! Auth::guard('web')->validate([
+        if (!Auth::guard('web')->validate([
             'email' => $request->user()->email,
             'password' => $request->password,
         ])) {

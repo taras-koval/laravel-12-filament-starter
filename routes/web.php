@@ -9,10 +9,16 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\Profile\AccountController;
 use App\Http\Controllers\Profile\DashboardController;
+use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [IndexController::class, 'index'])->name('index');
 
+Route::get('/test', [TestController::class, 'index'])->name('test');
+
+/**
+ * Profile
+ */
 Route::middleware(['auth', 'verified'])->prefix('profile')->name('profile.')->group(function () {
     // Dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -23,7 +29,6 @@ Route::middleware(['auth', 'verified'])->prefix('profile')->name('profile.')->gr
     Route::put('/account/password', [AccountController::class, 'updatePasswordAjax'])->name('account.update-password');
     Route::delete('/account', [AccountController::class, 'destroy'])->middleware('password.confirm')->name('account.destroy');
 });
-
 
 /**
  * Authentication

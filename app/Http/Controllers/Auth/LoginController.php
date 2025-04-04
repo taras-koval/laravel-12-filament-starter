@@ -9,13 +9,11 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
-use Tests\Feature\Auth\LoginControllerTest;
 
 // TODO: Google reCAPTCHA
 // TODO: Two-factor authentication
 /**
- * Tests
- * @see LoginControllerTest
+ * Tests @see LoginControllerTest
  */
 class LoginController extends Controller
 {

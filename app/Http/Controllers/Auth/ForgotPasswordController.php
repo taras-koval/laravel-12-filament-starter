@@ -15,18 +15,16 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
-use Tests\Feature\Auth\ForgotPasswordControllerTest;
 
 /**
- * Tests
- * @see ForgotPasswordControllerTest
+ * Tests @see ForgotPasswordControllerTest
  */
 class ForgotPasswordController extends Controller
 {
     /**
      * Display the forgot password reset link request view.
      */
-    public function create() : View
+    public function create(): View
     {
         return view('auth.forgot-password');
     }

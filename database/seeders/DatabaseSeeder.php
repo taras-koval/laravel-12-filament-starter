@@ -23,7 +23,6 @@ class DatabaseSeeder extends Seeder
                 'password' => 'password',
             ])->assignRole(UserRoleEnum::ADMINISTRATOR);
 
-
         });
     }
 }

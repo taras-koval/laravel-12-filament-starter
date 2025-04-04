@@ -6,10 +6,10 @@
         <div class="flex flex-col md:flex-row gap-10">
             <div class="flex flex-col w-full md:w-56">
                 <a href="{{ route('profile.dashboard') }}" class="button-link-component"
-                   @if(request()->routeIs('profile.dashboard')) data-current @endif>Dashboard</a>
+                   @if(request()->routeIs('profile.dashboard')) data-current @endif>{{ __('Dashboard') }}</a>
 
                 <a href="{{ route('profile.account.edit') }}" class="button-link-component"
-                   @if(request()->routeIs('profile.account.edit')) data-current @endif>Account</a>
+                   @if(request()->routeIs('profile.account.edit')) data-current @endif>{{ __('Account') }}</a>
             </div>
 
             <div class="flex flex-col flex-1 self-stretch">

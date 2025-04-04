@@ -24,9 +24,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Model::preventLazyLoading(!app()->isProduction());
-        Model::preventSilentlyDiscardingAttributes(!app()->isProduction());
-        Model::preventAccessingMissingAttributes(!app()->isProduction());
+        // Prevent execution of destructive database commands (like drop or truncate) in production
+        DB::prohibitDestructiveCommands(app()->isProduction());
+
+        // Prevent lazy loading of relationships to avoid unexpected database queries (especially N+1 issues)
+        // Disallow assigning attributes that are not listed in $fillable or $guarded
+        // Prevent accessing attributes that are not loaded or do not exist on the model
+        Model::shouldBeStrict(!app()->isProduction());
 
         // DB::whenQueryingForLongerThan(500, function (Connection $connection, QueryExecuted $event) {
         //     // Notify development team...

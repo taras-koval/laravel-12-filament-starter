@@ -11,12 +11,10 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
-use Tests\Feature\Auth\RegisterControllerTest;
 
 // TODO: Google reCAPTCHA
 /**
- * Tests
- * @see RegisterControllerTest
+ * Tests @see RegisterControllerTest
  */
 class RegisterController extends Controller
 {
@@ -25,7 +23,7 @@ class RegisterController extends Controller
         return view('auth.register');
     }
 
-    public function storeAjax(RegisterRequest $request) : JsonResponse
+    public function storeAjax(RegisterRequest $request): JsonResponse
     {
         $user = User::query()->create([
             'name' => $request->validated('name'),
@@ -37,7 +35,7 @@ class RegisterController extends Controller
 
         Auth::login($user);
 
-        $redirect = $user instanceof MustVerifyEmail && ! $user->hasVerifiedEmail()
+        $redirect = $user instanceof MustVerifyEmail && !$user->hasVerifiedEmail()
             ? route('verification.notice')
             : route('profile.dashboard');
 

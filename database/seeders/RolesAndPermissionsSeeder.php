@@ -33,7 +33,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $this->assignPermissionsToRoles($roles, $permissions, $rolePermissions);
     }
 
-    function createPermissions(): Collection
+    public function createPermissions(): Collection
     {
         // Map each enum to a database permission entry
         return collect(UserPermissionEnum::cases())->mapWithKeys(function ($permissionEnum) {

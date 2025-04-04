@@ -9,11 +9,9 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
-use Tests\Feature\Auth\EmailVerificationControllerTest;
 
 /**
- * Tests
- * @see EmailVerificationControllerTest
+ * Tests @see EmailVerificationControllerTest
  */
 class EmailVerificationController extends Controller
 {
@@ -56,7 +54,7 @@ class EmailVerificationController extends Controller
 
         return response()->json([
             'status' => 'verification-link-sent',
-            'message' => __("A new verification link has been sent."),
+            'message' => __('A new verification link has been sent.'),
         ]);
     }
 }

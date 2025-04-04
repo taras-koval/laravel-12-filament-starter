@@ -16,8 +16,9 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory;
-    use Notifiable;
+
     use HasRoles;
+    use Notifiable;
 
     /**
      * The attributes that are mass assignable.
