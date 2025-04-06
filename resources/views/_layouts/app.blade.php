@@ -14,9 +14,9 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="flex flex-col min-h-screen">
+<body class="flex flex-col min-h-screen overflow-anchor-none">
 <header class="bg-zinc-800 text-white">
-    <nav class="container relative flex justify-between h-16">
+    <nav class="container relative flex justify-between min-h-16">
         <div class="flex items-center gap-x-8">
             <a href="{{ route('index') }}" class="text-2xl tracking-tighter font-black leading-tight">
                 {{ config('app.name') }}

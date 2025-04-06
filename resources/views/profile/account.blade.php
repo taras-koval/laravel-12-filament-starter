@@ -49,7 +49,10 @@
 
     <section class="max-w-md mb-10" x-data="passwordForm()">
         <header class="mb-4">
-            <h2 class="font-bold mb-2" x-text="hasPassword ? '{{ __('Update password') }}' : '{{ __('Create password') }}'"></h2>
+            <h2 class="font-bold mb-2">
+                @if(auth()->user()->password) {{ __('Update password') }} @else {{ __('Create password') }} @endif
+            </h2>
+
             <p class="text-sm text-zinc-500">
                 {{ __('Ensure your account is using a long, random password to stay secure') }}
             </p>
@@ -57,7 +60,7 @@
 
         <form action="{{ route('profile.account.update-password') }}" method="post" @submit.prevent="submit()">
             {{-- Current Password --}}
-            <template x-if="hasPassword">
+            @if(auth()->user()->password)
                 <div class="mb-4">
                     <label for="current_password" class="label-component">{{ __('Current Password') }}</label>
                     <input type="password" name="current_password" id="current_password" required
@@ -68,7 +71,7 @@
                         <p class="error-component" x-text="errors.current_password[0]"></p>
                     </template>
                 </div>
-            </template>
+            @endif
 
             {{-- New Password --}}
             <div class="mb-4">
@@ -104,7 +107,7 @@
         </form>
     </section>
 
-    <section class="max-w-md mb-10">
+    <section class="max-w-md mb-10 hidden">
         <header class="mb-4">
             <h2 class="font-bold mb-2">{{ __('Delete account') }}</h2>
             <p class="text-sm text-zinc-500">{{ __('Delete your account and all of its resources') }}</p>
@@ -119,7 +122,6 @@
             </button>
         </form>
     </section>
-
 @endsection
 
 @push('scripts')
@@ -185,9 +187,12 @@
                             this.form.password = '';
                             this.form.password_confirmation = '';
 
-                            this.hasPassword = true;
-
                             toastSuccess(response.data.message);
+
+                            if (!this.hasPassword) {
+                                localStorage.setItem('toast_success', response.data.message);
+                                location.reload();
+                            }
                         })
                         .catch(error => {
                             if (error.response?.status === 422) {
