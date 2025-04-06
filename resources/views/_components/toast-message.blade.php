@@ -47,9 +47,23 @@
                     }, 4000);
                 };
 
-                window.toast = (msg) => addToast(msg ?? 'Empty Info', 'info');
+                window.toast = (msg) => addToast(msg, 'info');
                 window.toastSuccess = (msg) => addToast(msg ?? 'Success.', 'success');
                 window.toastError = (msg) => addToast(msg ?? 'Something went wrong.', 'error');
+
+                // toasts after page reload
+                if (localStorage.getItem('toast')) {
+                    addToast(localStorage.getItem('toast'), 'success');
+                    localStorage.removeItem('toast');
+                }
+                if (localStorage.getItem('toast_success')) {
+                    addToast(localStorage.getItem('toast_success'), 'success');
+                    localStorage.removeItem('toast_success');
+                }
+                if (localStorage.getItem('toast_error')) {
+                    addToast(localStorage.getItem('toast_error'), 'error');
+                    localStorage.removeItem('toast_error');
+                }
             }
         }
     }
