@@ -37,15 +37,20 @@
     }
 
     .button-link-component {
-        @apply flex items-center h-10 lg:h-9 px-3 py-0 my-px gap-3 w-full
-            text-left text-zinc-500
+        @apply flex items-center h-10 px-3 w-full
+            text-left
+            text-zinc-500
             rounded-lg
-            data-current:text-(--color-neutral-800)
-            data-current:bg-zinc-800/[4%]
-            hover:data-current:text-(--color-neutral-800)
+            whitespace-nowrap
+
             hover:text-zinc-800
-            hover:bg-zinc-800/[4%]
+            hover:bg-zinc-100
             hover:no-underline
+
+            hover:data-current:text-neutral-800
+            data-current:text-neutral-800
+            data-current:bg-zinc-100
+            data-current:font-medium
     }
 
     .button-primary-component {
@@ -104,7 +109,7 @@
     }
 
     .input-component {
-        @apply block appearance-none px-3 h-10
+        @apply block appearance-none px-3 h-10 max-w-md
             border border-zinc-200 border-b-zinc-300/80 rounded-lg
             bg-white shadow-xs
             text-zinc-700 leading-[1.375rem]

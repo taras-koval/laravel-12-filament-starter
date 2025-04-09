@@ -4,10 +4,10 @@
 @section('profile-header', __('Account Settings'))
 
 @section('profile-content')
-    <section class="max-w-md mb-10" x-data="profileForm()">
+    <section x-data="profileForm()">
         <header class="mb-4">
-            <h2 class="font-bold mb-2">{{ __('Account details') }}</h2>
-            <p class="text-sm text-zinc-500">{{ __('Update your profile information') }}</p>
+            <h2 class="font-bold mb-2">{{ __('Update profile information') }}</h2>
+            {{--<p class="text-sm text-zinc-500">{{ __('Update your profile information') }}</p>--}}
         </header>
 
         <form action="{{ route('profile.account.update') }}" method="post" @submit.prevent="submit()">
@@ -47,15 +47,15 @@
         </form>
     </section>
 
-    <section class="max-w-md mb-10" x-data="passwordForm()">
+    <section x-data="passwordForm()">
         <header class="mb-4">
             <h2 class="font-bold mb-2">
                 @if(auth()->user()->password) {{ __('Update password') }} @else {{ __('Create password') }} @endif
             </h2>
 
-            <p class="text-sm text-zinc-500">
+            {{--<p class="text-sm text-zinc-500">
                 {{ __('Ensure your account is using a long, random password to stay secure') }}
-            </p>
+            </p>--}}
         </header>
 
         <form action="{{ route('profile.account.update-password') }}" method="post" @submit.prevent="submit()">
@@ -107,7 +107,7 @@
         </form>
     </section>
 
-    <section class="max-w-md mb-10 hidden">
+    <section class="hidden">
         <header class="mb-4">
             <h2 class="font-bold mb-2">{{ __('Delete account') }}</h2>
             <p class="text-sm text-zinc-500">{{ __('Delete your account and all of its resources') }}</p>
