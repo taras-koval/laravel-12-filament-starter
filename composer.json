@@ -12,6 +12,7 @@
         "laravel/socialite": "^5.18",
         "laravel/tinker": "^2.10.1",
         "livewire/livewire": "^3.6",
+        "propaganistas/laravel-phone": "^5.3",
         "spatie/laravel-permission": "^6.16",
         "spatie/laravel-query-builder": "^6.3"
     },
@@ -30,7 +31,11 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "app/Helpers/functions.php",
+            "app/Helpers/filament.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

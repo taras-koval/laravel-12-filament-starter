@@ -2,17 +2,25 @@
 
 namespace App\Models;
 
-use App\Enums\UserRoleEnum;
+use App\Enums\UserPermissionEnum;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasAvatar;
 use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Spatie\Permission\Traits\HasRoles;
+use Tests\Unit\Models\UserTest;
 
-class User extends Authenticatable implements MustVerifyEmail, FilamentUser
+/**
+ * Tests @see UserTest
+ */
+class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory;
@@ -60,8 +68,49 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
         ];
     }
 
+    public function name(): Attribute
+    {
+        return Attribute::make(
+            set: fn (string $value) => Str::title($value),
+        );
+    }
+
+    public function avatarUrl(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                if (blank($this->avatar)) {
+                    return asset('images/avatar-default.svg');
+                }
+
+                if (filter_var($this->avatar, FILTER_VALIDATE_URL)) {
+                    return $this->avatar;
+                }
+
+                return Storage::disk('public')->url($this->avatar);
+            }
+        );
+    }
+
+    protected static function booted(): void
+    {
+        // Automatically clean up avatar field if file doesn't exist
+        static::retrieved(function ($user) {
+            if ($user->avatar && !filter_var($user->avatar, FILTER_VALIDATE_URL)) {
+                if (!Storage::disk('public')->exists($user->avatar)) {
+                    $user->updateQuietly(['avatar' => null]);
+                }
+            }
+        });
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->hasRole(UserRoleEnum::ADMINISTRATOR);
+        return $this->hasPermissionTo(UserPermissionEnum::ADMIN_PANEL_ACCESS);
+    }
+
+    public function getFilamentAvatarUrl(): ?string
+    {
+        return $this->avatar_url;
     }
 }

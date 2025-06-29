@@ -38,7 +38,7 @@
                     {{-- Dropdown Button --}}
                     <button @click="openProfileDropdown = !openProfileDropdown" class="inline-flex items-center hover:bg-zinc-700 rounded-lg px-2.5 py-1.5 gap-2">
                         @if($user->avatar)
-                            <img src="{{ $user->avatar }}" alt="{{ $user->name }}" class="size-8 rounded-full">
+                            <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" class="size-8 rounded-full object-cover object-center">
                         @else
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="size-8 text-zinc-300">
                                 <path d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653ZM6.145 17.812A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"/>

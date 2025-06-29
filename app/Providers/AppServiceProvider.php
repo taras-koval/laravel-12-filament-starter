@@ -2,12 +2,17 @@
 
 namespace App\Providers;
 
+use App\Models\User;
+use App\Policies\RolePolicy;
+use App\Policies\UserPolicy;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
+use Spatie\Permission\Models\Role;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -36,5 +41,8 @@ class AppServiceProvider extends ServiceProvider
         //     // Notify development team...
         //     Log::warning("Database queries exceeded 500 ms on {$connection->getName()}");
         // });
+
+        Gate::policy(User::class, UserPolicy::class);
+        Gate::policy(Role::class, RolePolicy::class);
     }
 }
