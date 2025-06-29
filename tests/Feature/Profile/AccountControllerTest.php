@@ -32,20 +32,27 @@ class AccountControllerTest extends TestCase
         $response = $this->actingAs($user)->patchJson(route('profile.account.update'), [
             'name' => 'New Name',
             'email' => 'new@example.com',
+            'phone' => '+380501234567',
         ]);
 
         $response->assertOk();
         $response->assertJson([
             'status' => 'profile-updated',
         ]);
-
         $this->assertDatabaseHas('users', [
             'id' => $user->id,
             'name' => 'New Name',
             'email' => 'new@example.com',
+            'phone' => '+380501234567',
         ]);
 
         $this->assertNull($user->fresh()->email_verified_at);
+
+        $response = $this->actingAs($user)->patchJson(route('profile.account.update'), [
+            'phone' => 'abc123', // invalid format
+        ]);
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['phone']);
     }
 
     public function test_user_can_update_password()

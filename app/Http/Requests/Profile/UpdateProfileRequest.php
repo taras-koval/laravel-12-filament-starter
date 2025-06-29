@@ -13,6 +13,15 @@ class UpdateProfileRequest extends FormRequest
         return [
             'name' => ['string', 'max:255'],
             'email' => ['string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($this->user()->id)],
+            'phone' => ['nullable', 'phone:AUTO', Rule::unique('users', 'phone')->ignore(auth()->id())],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'phone.phone' => __('The phone field contains an invalid number.'),
+            'phone.unique' => __('This mobile number is already taken.'),
         ];
     }
 }
