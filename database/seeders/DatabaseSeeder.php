@@ -17,12 +17,24 @@ class DatabaseSeeder extends Seeder
         DB::transaction(function () {
             $this->call(RolesAndPermissionsSeeder::class);
 
-            User::factory()->create([
-                'name' => 'Admin',
-                'email' => 'admin@example.com',
-                'password' => 'password',
-            ])->assignRole(UserRoleEnum::ADMINISTRATOR);
-
+            $this->seedUsers();
         });
+    }
+
+    private function seedUsers(): void
+    {
+        User::factory()->create([
+            'name' => 'Admin',
+            'email' => 'admin@example.com',
+            'password' => 'password',
+        ])->syncRoles(UserRoleEnum::ADMINISTRATOR);
+
+        User::factory()->create([
+            'name' => 'Manager',
+            'email' => 'manager@example.com',
+            'password' => 'password',
+        ])->syncRoles(UserRoleEnum::MANAGER);
+
+        User::factory()->withRole(UserRoleEnum::USER)->count(10)->create();
     }
 }
