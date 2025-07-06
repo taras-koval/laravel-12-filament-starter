@@ -7,12 +7,15 @@ use App\Http\Controllers\Auth\OAuth\ProviderController;
 use App\Http\Controllers\Auth\PasswordConfirmationController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\IndexController;
+use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\Profile\AccountController;
 use App\Http\Controllers\Profile\DashboardController;
 use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [IndexController::class, 'index'])->name('index');
+
+Route::get('locale/{locale}', [LocaleController::class, 'switch'])->name('locale.switch');
 
 Route::get('/test', [TestController::class, 'index'])->name('test');
 

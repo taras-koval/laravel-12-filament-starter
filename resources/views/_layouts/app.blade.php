@@ -24,6 +24,33 @@
         </div>
 
         <div class="flex items-center font-medium gap-x-8">
+            {{-- Language Dropdown --}}
+            <div x-data="{openLangDropdown: false}" class="relative">
+                {{-- Dropdown Button --}}
+                <button @click="openLangDropdown = !openLangDropdown"
+                        class="inline-flex items-center hover:bg-zinc-700 rounded-lg px-2.5 py-1.5 gap-2">
+                    <span class="text-xl py-0.5">🌐</span>
+
+                    <span class="text-sm">{{ strtoupper(app()->getLocale()) }}</span>
+
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 18" fill="none" stroke-width="3.5" stroke="currentColor" aria-hidden="true" class="hidden sm:block size-3.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/>
+                    </svg>
+                </button>
+
+                {{-- Dropdown Panel --}}
+                <div class="absolute right-0 top-full mt-1 z-100 font-normal bg-white w-48 rounded-lg shadow p-2 [&>a]:text-zinc-800"
+                     x-show="openLangDropdown" @click.outside="openLangDropdown = false" x-transition.duration.75 x-cloak>
+
+                    @foreach(config('app.available_locales') as $localeCode => $localeData)
+                        <a href="{{ route('locale.switch', $localeCode) }}"
+                           class="block px-3 py-2 text-zinc-800 hover:bg-zinc-100 rounded {{ app()->getLocale() === $localeCode ? 'bg-zinc-100 font-medium' : '' }}">
+                            {{ $localeData['flag'] }} {{ $localeData['native'] }}
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+
             @guest
                 <a href="{{ route('login') }}" class="hover:underline">{{ __('Login') }}</a>
                 <a href="{{ route('register') }}" class="hover:underline">{{ __('Register') }}</a>
