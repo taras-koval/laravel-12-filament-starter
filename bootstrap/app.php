@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Middlewares\SetLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -18,9 +17,6 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectUsersTo(function () {
             return route('profile.dashboard');
         });
-        $middleware->web(append: [
-            SetLocale::class,
-        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

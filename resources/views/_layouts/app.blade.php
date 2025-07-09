@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ LaravelLocalization::getCurrentLocale() }}">
 <head>
     <meta charset="UTF-8">
 
@@ -11,6 +11,11 @@
         @yield('title', '')
         @if(trim($__env->yieldContent('title'))) | @endif {{ config('app.name') }}
     </title>
+
+    @foreach(LaravelLocalization::getSupportedLocales() as $localeCode => $properties)
+        <link rel="alternate" hreflang="{{ $localeCode }}" href="{{ LaravelLocalization::getLocalizedURL($localeCode) }}">
+    @endforeach
+    <link rel="alternate" hreflang="x-default" href="{{ LaravelLocalization::getLocalizedURL(locale: 'en') }}">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -27,27 +32,45 @@
             {{-- Language Dropdown --}}
             <div x-data="{openLangDropdown: false}" class="relative">
                 {{-- Dropdown Button --}}
-                <button @click="openLangDropdown = !openLangDropdown"
-                        class="inline-flex items-center hover:bg-zinc-700 rounded-lg px-2.5 py-1.5 gap-2">
-                    <span class="text-xl py-0.5">🌐</span>
+                <button class="inline-flex items-center hover:bg-zinc-700 rounded-lg px-2.5 py-2.5 gap-2"
+                        @click="openLangDropdown = !openLangDropdown">
 
-                    <span class="text-sm">{{ strtoupper(app()->getLocale()) }}</span>
+                    @if(LaravelLocalization::getCurrentLocale() === 'en')
+                        <img src="https://flagcdn.com/w40/gb.png" alt="English" class="w-6 h-4 object-cover rounded-sm">
+                        <span class="text-sm">English</span>
+                    @elseif(LaravelLocalization::getCurrentLocale() === 'uk')
+                        <img src="https://flagcdn.com/w40/ua.png" alt="Ukrainian" class="w-6 h-4 object-cover rounded-sm">
+                        <span class="text-sm">Українська</span>
+                    @elseif(LaravelLocalization::getCurrentLocale() === 'pl')
+                        <img src="https://flagcdn.com/w40/pl.png" alt="Polish" class="w-6 h-4 object-cover rounded-sm">
+                        <span class="text-sm">Polski</span>
+                    @endif
 
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 18" fill="none" stroke-width="3.5" stroke="currentColor" aria-hidden="true" class="hidden sm:block size-3.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 18" fill="none" stroke-width="3.5"
+                         stroke="currentColor" aria-hidden="true" class="hidden sm:block size-3.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/>
                     </svg>
                 </button>
 
                 {{-- Dropdown Panel --}}
                 <div class="absolute right-0 top-full mt-1 z-100 font-normal bg-white w-48 rounded-lg shadow p-2 [&>a]:text-zinc-800"
-                     x-show="openLangDropdown" @click.outside="openLangDropdown = false" x-transition.duration.75 x-cloak>
+                     x-show="openLangDropdown" @click.outside="openLangDropdown = false" x-transition.duration.50 x-cloak>
 
-                    @foreach(config('app.available_locales') as $localeCode => $localeData)
-                        <a href="{{ route('locale.switch', $localeCode) }}"
-                           class="block px-3 py-2 text-zinc-800 hover:bg-zinc-100 rounded {{ app()->getLocale() === $localeCode ? 'bg-zinc-100 font-medium' : '' }}">
-                            {{ $localeData['flag'] }} {{ $localeData['native'] }}
-                        </a>
-                    @endforeach
+                    <a href="{{ LaravelLocalization::getLocalizedURL(locale: 'en') }}" class="button-link-component"
+                       @if(LaravelLocalization::getCurrentLocale() === 'en') data-current @endif>
+                        <img src="https://flagcdn.com/w40/gb.png" alt="English" class="w-6 h-4 object-cover rounded-sm shadow-sm mr-3">
+                        English
+                    </a>
+                    <a href="{{ LaravelLocalization::getLocalizedURL(locale: 'pl') }}" class="button-link-component"
+                       @if(LaravelLocalization::getCurrentLocale() === 'pl') data-current @endif>
+                        <img src="https://flagcdn.com/w40/pl.png" alt="Polish" class="w-6 h-4 object-cover rounded-sm shadow-sm mr-3">
+                        Polski
+                    </a>
+                    <a href="{{ LaravelLocalization::getLocalizedURL(locale: 'uk') }}" class="button-link-component"
+                       @if(LaravelLocalization::getCurrentLocale() === 'uk') data-current @endif>
+                        <img src="https://flagcdn.com/w40/ua.png" alt="Ukrainian" class="w-6 h-4 object-cover rounded-sm shadow-sm mr-3">
+                        Українська
+                    </a>
                 </div>
             </div>
 
@@ -56,37 +79,36 @@
                 <a href="{{ route('register') }}" class="hover:underline">{{ __('Register') }}</a>
             @endguest
             @auth
-                @php
-                    $user = auth()->user();
-                @endphp
-
                 {{-- Profile Dropdown --}}
                 <div x-data="{openProfileDropdown: false}" class="relative">
                     {{-- Dropdown Button --}}
                     <button @click="openProfileDropdown = !openProfileDropdown" class="inline-flex items-center hover:bg-zinc-700 rounded-lg px-2.5 py-1.5 gap-2">
-                        @if($user->avatar)
-                            <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" class="size-8 rounded-full object-cover object-center">
+                        @if(auth()->user()->avatar)
+                            <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="size-8 rounded-full object-cover object-center">
                         @else
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="size-8 text-zinc-300">
                                 <path d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653ZM6.145 17.812A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"/>
                             </svg>
                         @endif
 
-                        <span class="hidden sm:inline">{{ $user->name }}</span>
+                        <span class="hidden sm:inline">{{ auth()->user()->name }}</span>
 
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 18" fill="none" stroke-width="3.5" stroke="currentColor" aria-hidden="true" class="hidden sm:block size-3.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 18" fill="none" stroke-width="3.5" stroke="currentColor"
+                             aria-hidden="true" class="hidden sm:block size-3.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/>
                         </svg>
                     </button>
 
                     {{-- Dropdown Panel --}}
                     <div class="absolute right-0 top-full mt-1 z-100 font-normal bg-white min-w-48 rounded-lg shadow p-2 [&>a]:text-zinc-800"
-                         x-show="openProfileDropdown" @click.outside="openProfileDropdown = false" x-transition.duration.75 x-cloak>
+                         x-show="openProfileDropdown" @click.outside="openProfileDropdown = false" x-transition.duration.50 x-cloak>
 
-                        <a href="{{ route('profile.dashboard') }}" class="button-link-component">
+                        <a href="{{ route('profile.dashboard') }}" class="button-link-component"
+                           @if(request()->routeIs('profile.dashboard')) data-current @endif>
                             {{ __('My Profile') }}
                         </a>
-                        <a href="{{ route('profile.account.edit') }}" class="button-link-component">
+                        <a href="{{ route('profile.account.edit') }}" class="button-link-component"
+                           @if(request()->routeIs('profile.account.edit')) data-current @endif>
                             {{ __('Account Settings') }}
                         </a>
 
