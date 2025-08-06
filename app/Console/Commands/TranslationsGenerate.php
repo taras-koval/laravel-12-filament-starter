@@ -14,14 +14,14 @@ class TranslationsGenerate extends Command
     {
         $this->info('🌐 Generating translation files...');
 
-        // Get all configured locales from our app config
-        // TODO: create config
-        $locales = array_keys(config('app.available_locales', ['en' => 'English']));
+        $localesConfig = config('translation-manager.available_locales', [
+            ['code' => 'en', 'name' => 'English', 'flag' => 'gb'],
+        ]);
+        $locales = collect($localesConfig)->pluck('code')->all();
 
         if (empty($locales)) {
-            $this->error('No locales found in config/app.php available_locales');
-
-            return Command::FAILURE;
+            $this->error('No locales found in config/translation-manager.php available_locales');
+            return self::FAILURE;
         }
 
         // Scan all code files for translation keys
@@ -35,8 +35,7 @@ class TranslationsGenerate extends Command
         }
 
         $this->info('✅ Translation files generated successfully!');
-
-        return Command::SUCCESS;
+        return self::SUCCESS;
     }
 
     /**
@@ -124,7 +123,7 @@ class TranslationsGenerate extends Command
     {
         $this->info("📝 Processing locale: {$locale}");
 
-        // Create locale directory in the correct Laravel location (lang/ not resources/lang/)
+        // Create a locale directory in the correct Laravel location (lang/ not resources/lang/)
         $localeDir = base_path("lang/{$locale}");
         if (!File::isDirectory($localeDir)) {
             File::makeDirectory($localeDir, 0755, true);
@@ -133,7 +132,7 @@ class TranslationsGenerate extends Command
         // Copy standard Laravel translation files
         $this->copyStandardFiles($locale);
 
-        // Create or update JSON file with scanned keys
+        // Create or update a JSON file with scanned keys
         $this->updateJsonTranslationFile($locale, $translationKeys);
     }
 
@@ -153,7 +152,6 @@ class TranslationsGenerate extends Command
             $sourcePath = "{$englishDir}/{$file}";
             $targetPath = "{$localeDir}/{$file}";
 
-            // Copy file if source exists and target doesn't
             if (File::exists($sourcePath) && !File::exists($targetPath)) {
                 File::copy($sourcePath, $targetPath);
             }
@@ -161,7 +159,7 @@ class TranslationsGenerate extends Command
     }
 
     /**
-     * Create or update JSON translation file with new keys
+     * Create or update a JSON translation file with new keys
      */
     private function updateJsonTranslationFile(string $locale, array $translationKeys): void
     {
@@ -171,18 +169,18 @@ class TranslationsGenerate extends Command
         $existingTranslations = [];
         if (File::exists($jsonFile)) {
             $content = File::get($jsonFile);
-            $existingTranslations = json_decode($content, true) ?: [];
+            $existingTranslations = json_decode($content, true, 512, JSON_THROW_ON_ERROR) ?: [];
         }
 
         $updatedTranslations = $existingTranslations;
         $newKeysAdded = 0;
         $originalLocale = app()->getLocale();
 
-        // Temporarily switch to target locale for translation checks
+        // Temporarily switch to the target locale for translation checks
         app()->setLocale($locale);
 
         foreach ($translationKeys as $key) {
-            // Skip if key already exists in JSON file
+            // Skip if the key already exists in the JSON file
             if (array_key_exists($key, $updatedTranslations)) {
                 continue;
             }
@@ -203,7 +201,7 @@ class TranslationsGenerate extends Command
 
         // Save updated translations
         ksort($updatedTranslations);
-        $jsonContent = json_encode($updatedTranslations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        $jsonContent = json_encode($updatedTranslations, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         File::put($jsonFile, $jsonContent);
 
         if ($newKeysAdded > 0) {

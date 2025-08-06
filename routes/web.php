@@ -21,7 +21,7 @@ Route::group([
         LaravelLocalizationRedirectFilter::class,
         // LaravelLocalizationViewPath::class,
     ],
-], function () {
+], static function () {
     Route::get('/', [IndexController::class, 'index'])->name('index');
 
     Route::get('/test', [TestController::class, 'index'])->name('test');
@@ -76,3 +76,16 @@ Route::group([
         Route::post('logout', [LoginController::class, 'destroy'])->name('logout');
     });
 });
+
+if (config('translation-manager.language_switcher')) {
+    $availableCodes = collect(config('translation-manager.available_locales'))->pluck('code')->toArray();
+
+    Route::group(['middleware' => ['web']], static function () use ($availableCodes) {
+        Route::get('select-language/{code}', static function ($code) {
+            request()->session()->put('language', $code);
+
+            return redirect()->back();
+        })->whereIn('code', $availableCodes)->name('translation-manager.switch');
+    });
+}
+
